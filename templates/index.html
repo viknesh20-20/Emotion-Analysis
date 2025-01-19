@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Recognition</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* Textarea */
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button */
+        button {
+            background-color: #ff6f61;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff3d2f;
+        }
+
+        /* Result Section */
+        .result {
+            margin-top: 30px;
+            display: none;
+            text-align: center;
+        }
+
+        .result h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #2d2d2d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Emotion Recognition from Text</h1>
+        <p>Enter some text, and we'll predict the emotion behind it!</p>
+    </div>
+
+    <textarea id="inputText" placeholder="Enter your text here..." rows="6" cols="60"></textarea><br>
+
+    <button id="predictButton">Predict Emotion</button>
+
+    <div id="result" class="result">
+        <h2>Predicted Emotion:</h2>
+        <p id="emotionResult">--</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('predictButton').addEventListener('click', function() {
+        var text = document.getElementById('inputText').value;
+        if (text) {
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.predicted_emotions) {
+                    console.log('Predicted emotions:', data.predicted_emotions);  // Debugging
+                    document.getElementById('emotionResult').innerHTML = data.predicted_emotions[0];
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    document.getElementById('emotionResult').innerHTML = 'Error: ' + data.error;
+                }
+            })
+            .catch(error => {
+                console.log('Error:', error);  // Debugging
+                document.getElementById('emotionResult').innerHTML = 'Error: ' + error;
+            });
+        } else {
+            alert('Please enter some text');
+        }
+    });
+</script>
+</body>
+</html>
